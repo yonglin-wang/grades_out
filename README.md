@@ -60,18 +60,19 @@ Do the following for each class at the beginning of each semester.
     - refer to [the grading sheet template file](template.csv) for a general sense of using formats and styles
 2. Download the grading Google Sheet as either .csv (current sheet, UTF-8 encoding) or .xlsx and save it to project root.
     - In the latter case, take note of the sheet name. Note that, though both are supported, in general, **.csv format is encouraged** for faster processing.
-3. Meanwhile, download the submission folders from LATTE
+3. Meanwhile, download the submission folders as a .zip from LATTE and decompress the .zip file into one (1) parent folder under project root. Then, this parent folder's immediate subdirectories should be each student's submission folder with a pattern of ```<student name>_<ID digits>_assignsubmission_file_```.
 4. In Terminal on Mac (or any command line interface of your choice), do the following
    ```
    $ cd <project root path>
    $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias>
    ``` 
-   For example, if all the LATTE folders are saved under ```/path/to/project/A1_submissions/```, the grading sheet saved at the project root is ```A1_grades.csv```, and the assignment has an alias of ```A1```, we will run the following comman:
+   For example, if all the LATTE folders are saved under ```/path/to/project/A1_submissions/```, the grading sheet saved at the project root is ```A1_grades.csv```, and the assignment has an alias of ```A1```, we will run the following command:
    ```
    $ cd /path/to/project/
    $ python grades_out.py A1_submissions A1_grades.csv A1
    ```
    
+   - Note: for the quickest way to fill in the project path after ```cd ``` in most terminal emulators, you can drag the project root folder from your file explorer and release it onto your commandline interface.
    - Note: if the TA left a comment cell blank, the report will include a "no comment entered" notice. 
    - If you want to overwrite existing feedback files, run the command with --allow_rewrite:
    ```
@@ -165,7 +166,7 @@ Don't:
 # Known Issues
 ## Displaying non-ascii names
 ### Problem
-If a non-ascii name is pasted and saved to the latte_grading_conversion.csv through a fancier word processor (such as Excel and Numbers), its encoding will confuse the program, causing either a program crash or the non-ascii character to be skipped.
+If a non-ascii name is pasted and saved to ```conv/latte_grading_conversion.csv``` through a fancier word processor (such as Excel and Numbers), its encoding will confuse the program, causing either a program crash or the non-ascii character to be skipped.
 
 Examples of such names include: é as in Mathéo, á as in János
 
@@ -175,7 +176,7 @@ UnicodeDecodeError: 'utf-8' codec can't decode byte 0x8e in position 9: invalid 
 ```
 
 ### Solution
-Instead of a fancy word processor, do the pasting and saving of the non-ascii character in a simpler program (e.g. TextEdit, Aquamacs, or vim if you may). Saving the .csv file there can allow the encoding to be recognizable by Python for most of the time. 
+Instead of a fancy word processor, do the pasting and saving of the non-ascii character to ```conv/latte_grading_conversion.csv``` in a simpler program (e.g. TextEdit, Aquamacs, or vim if you may). Saving the .csv file there can allow the encoding to be recognizable by Python for most of the time. 
 
 ## Students with Same LATTE name
 Not yet tested. The solution largely depends on how LATTE handles it in the folder name. Currently, the program is designed to error out in this situation, before generating any reports in any student's folder. 
