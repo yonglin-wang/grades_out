@@ -84,14 +84,14 @@ Do the following for each class at the beginning of each semester.
 6. After the program is done, the LATTE folders will be populated with feedback file, and the directory containing all the LATTE folders will be ready for compression and bulk-upload back to LATTE 
     - [Bulk upload instruction on LATTE](https://moodle2.brandeis.edu/mod/page/view.php?id=929709)
 # Grading Sheet Item Content Convention Do's and Don'ts
-## Name column
+## The Name column
 Do:
-- Make sure the column containing students' names is named exactly as ```Name``` (Case must match)
+- Make sure the one and only column containing students' names is named exactly ```Name``` (Case must match)
 
 Don't:
 - Have any other non-name column named as ```Name```.
 
-## Column of score-containing sub-sections (e.g. Pt 1 (1-2) /.45, etc.)
+## Columns of score-containing sub-sections (e.g. Pt 1 (1-2) /.45, etc.)
 
 Do:
 - Add one or more indentation marks (```>```) to the beginning of certain items (e.g. >Pt 1...); for each indentation mark, 4 spaces will be added before the item in the report. For non-comment columns with no indentation marks (usually "total" columns), an empty line will be appended for an effect of emphasis.
@@ -147,7 +147,7 @@ Do:
 Don't:
 - No need to make A#.print sheet columns "look nice" any more, i.e. no more dashes and/or abbreviations just to fit the item name in a narrow cell
 - Don't include the word "comment" as part of the title, unless this column is intended for comments, or some 0 values under it may not be displayed properly.
-## Comments
+## Comment columns
 Do:
 - **Always include word "comment"** (case-insensitive) in the comment column(s) 
 - Feel free to use line breaks (alt + enter in Google Sheets and Excel) in the comments, the format will be properly indented.
