@@ -205,7 +205,7 @@ class GradesOut:
 
     def generate_report(self, name: str, entry: dict) -> str:
         """
-        generate string report based on given pd.Series object of the student. Note: entry dictionary should be ordered
+        generate string report based on given feedback info object of the student. Note: entry dictionary should be ordered
         because we assume an ordered correspondence between entry items and self.items
         :param name: name of student to generate report for, as seen on grading sheet
         :param entry: dictionary containing info for report output
@@ -271,9 +271,14 @@ def main():
     def print_random_report():
         print("\nPreviewing report output. No reports will be saved until you approve it in the next question. ")
         sample_name, sample_entry = random.choice(list(go.all_info.items()))
+
+        # show where the report will be saved
         print("-" * 20 + "\nThe following report will be generated and saved as %s: " %
               os.path.join(go.save_dir[sample_name], go.generate_file_name(sample_name)))
-        print(go.generate_report(sample_name, sample_entry))
+
+        # generate the main report
+        print(go.generate_report(sample_name.replace(",", ", "), sample_entry))
+
         print("-" * 20)
 
     # preview report for user

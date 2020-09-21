@@ -78,6 +78,9 @@ Do the following for each class at the beginning of each semester.
    $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_rewrite
    ``` 
 5. Follow the program prompts to view a few sample reports and determine if you wish to continue with the current format.
+    
+   - In this step, check especially if the formatting of the file path, content of file path, formatting of the report, and content of the report are all correct and/or as desired.
+   - For quality assurance, it is recommended to sample at least 10% of all reports.
 6. After the program is done, the LATTE folders will be populated with feedback file, and the directory containing all the LATTE folders will be ready for compression and bulk-upload back to LATTE 
     - [Bulk upload instruction on LATTE](https://moodle2.brandeis.edu/mod/page/view.php?id=929709)
 # Grading Sheet Item Content Convention Do's and Don'ts
@@ -88,7 +91,7 @@ Do:
 Don't:
 - Have any other non-name column named as ```Name```.
 
-## Scores of sub-sections (e.g. Pt 1 (1-2), etc.)
+## Column of score-containing sub-sections (e.g. Pt 1 (1-2) /.45, etc.)
 
 Do:
 - Add one or more indentation marks (```>```) to the beginning of certain items (e.g. >Pt 1...); for each indentation mark, 4 spaces will be added before the item in the report. For non-comment columns with no indentation marks (usually "total" columns), an empty line will be appended for an effect of emphasis.
