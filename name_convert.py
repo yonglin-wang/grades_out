@@ -25,7 +25,7 @@ FOLDER_NAME_REGEX = r"([ a-zA-Z'-]+)_\d+_assignsubmission_file_"
 
 LATTE_COL_NAME = "Name on LATTE"
 GRADING_COL_NAME = "Name on Grading Sheet"
-OUTPUT_PATH = "test/latte_grading_conversion.csv"
+OUTPUT_PATH = "conv/latte_grading_conversion.csv"
 
 TEST_FOLDER = "test_A2"
 
@@ -60,19 +60,19 @@ def generate_csv_from_folder(dir: str):
 
     # stats: print # of names converted vs total folders
     print("Number of folders under directory %s: %d\n"
-          "Number of names found: %d (should be equal to the number of students who submitted the assignment)" %
+          "Number of names found: %d (should be equal to the number of name-containing LATTE folders under the directory)" %
           (dir, len([f for f in os.scandir(dir) if f.is_dir()]), len(sub_names)))
 
     # output to .csv
     latte_grading_pairs = [(latte_name, convert_name_for_grading(latte_name)) for latte_name in sub_names]
     df = pd.DataFrame(latte_grading_pairs, columns=[LATTE_COL_NAME, GRADING_COL_NAME])
     df = df.sort_values(GRADING_COL_NAME)
+    # TODO Not actually saved in conv/
     df.to_csv(OUTPUT_PATH, index=False)
 
     print("Conversion done! Converted names can be found at %s" % OUTPUT_PATH)
 
-
-if __name__ == "__main__":
+def main():
     # latte folder: submission folder from LATTE under which <name>_<digits>_assignsubmission_file_ folders are found
     parser = ArgumentParser(prog="name_convert.py",
                             usage="\n1. put the folder whose immediate subdirectories contain all LATTE submissions "
@@ -91,4 +91,5 @@ if __name__ == "__main__":
 
     generate_csv_from_folder(args.submission_folder)
 
-
+if __name__ == "__main__":
+    generate_csv_from_folder("example_folders")

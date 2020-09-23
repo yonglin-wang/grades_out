@@ -3,25 +3,47 @@ This Python-based, commandline-enabled program functions as a utility tool that 
 
 This program processes an assignment grading sheet containing all students' grade details and distributes assignment grade breakdown & comments as a .txt to each student's folder (exported from LATTE).
 
-First-time users: feel free to navigate the project by starting from [the instructions](#set-up-and-usage).
+# First-time users
+
+Hello! 
+
+Feel free to navigate the project by 
+1. starting with looking at the [example grading sheet](example_gradesheet.csv) and [the example folder exported from LATTE](example_folders) (i.e. the two inputs you'll need to provide) and the example report outputs for [Jane Doe](example_folders/Jane%20Doe_2898000_assignsubmission_file_/Jane_Doe_ExampleAssignment_Grade_Feedback.txt), [John Smith](example_folders/John%20Smith_2898000_assignsubmission_file_/John_Smith_ExampleAssignment_Grade_Feedback.txt), and [Mary Lee](example_folders/Mary%20Lee_2898000_assignsubmission_file_/Mary_Lee_ExampleAssignment_Grade_Feedback.txt) (i.e. what outputs you can expect to get from running the program and where you can find them)
+    - all example contents are made up and do not in any way refer to any real-world entities
+2. following [the instructions](#set-up-and-usage) for set up and usage
 
 # System Prerequisite
 - Python 3.6.1 or above ([Anaconda recommended, choose your system on the left menu](https://docs.anaconda.com/anaconda/install/))
-    - Mac Users: Set the anaconda as the default python program in your system, [original post here.](https://stackoverflow.com/questions/22773432/mac-using-default-python-despite-anaconda-install)
+    - Mac Users: temporarily set the Anaconda Python as the default Python program in your system, [original post here](https://stackoverflow.com/questions/22773432/mac-using-default-python-despite-anaconda-install).
       ```
       $ export PATH="$HOME/anaconda3/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:$PATH"
       ```
       then type
       ```
-      $ where python
+      $ which python
       ```
       to see if the output directory now correctly ends with ```anaconda3/bin```.
       > If not, try changing ```anaconda3``` to ```anaconda``` and try again.
+    
+    - To permanently change the default Python, 
+        1. figure out the working version export line from the above steps.
+        2. Use command
+            ```
+            $ open ~/.bash_profile
+            ```
+            to open the file in the default text editor of your system
+        3. Edit ```~/.bash_profile``` in your default editor by adding the ```export``` line at the beginning of the file and save it
+        4. Now the change is made. Check it by restarting your command line emulator and type ```$ which python``` to see if the path is now set to the Python path you've just specified in ```~/.bash_profile```. 
 - [pandas](https://pandas.pydata.org/pandas-docs/stable/getting_started/install.html)
     - After you have the correct default python program as shown above, Run the following command to install pandas
       ```
       $ python -m pip install --user pandas
       ```
+- [Nameparser](https://pypi.org/project/nameparser/)
+    - Similar to pandas, run the following
+    ```
+      $ python -m pip install --user nameparser
+    ```
 
 # Project Structure
 This section walks you through the purpose of the main files in this project. Everyone using this program is advised to grasp the function of conv/latte_grading_conversion.csv, and the code scripts are only informational for programming purposes. 
@@ -30,19 +52,50 @@ Sometimes referred to as "the conversion file" or "the name conversion file" in 
 
 **Very Important**: if any name change is made on the grading sheet, make sure to update it under the "Name on Grading Sheet" column so that the name conversion code does not break due to no match found.
 
+You must create this file before generating any reports. Follow the [set-up guide](#one-time-set-up-at-the-start-of-each-course) to generate it. 
+
+## grades_out.py
+Main program of this project. Learn how to collect input for it and use it [here](#distribute-reports-for-each-assignment).
+
+## name_convert.py
+Utility program for generating ```conv/latte_grading_conversion.csv```, which records the correspondence between LATTE folder names (e.g. "Mary Lee") and grading sheet names (e.g. "Lee,Mary"). 
+
+Learn how to use it [here](#one-time-set-up-at-the-start-of-each-course).
+
+## grading_item.py
+Utility code for generating reports. You do not need to run this script through command line interface. 
+
+
 ...TBC
+
 # Set-up and Usage
+Note that you can run all of the example commands in this section with the pre-packaged [example grading sheet](example_gradesheet.csv) and [example folders](example_folders). 
 ## One-time Set-up (at the start of each course)
 Do the following for each class at the beginning of each semester. 
+- Clone this repository (more detailed, visual instruction [here](https://blogs.sap.com/2019/07/12/how-to-clone-a-github-repository-to-local-mac-computer/)) to your computer by running the following two commands (e.g. Terminal on macOS or Cygwin on Windows)
 
+   ```
+   $ cd /path/to/some/folder/
+   $ git clone https://github.com/yonglin-wang/grades_out.git
+   ```
+   Now, you should be able to find the project at ```/path/to/some/folder/grades_out```
 - Create name conversion .csv file by
    1. Assign work (e.g. introduction) to the students and wait for everyone to submit. Meanwhile, make sure your machine meets the [system prerequisites](#system-prerequisite). 
    2. Download and decompress the .zip all students' LATTE folders and put it under project root.
-   3. Run name_convert.py
+   3. Run name_convert.py, which generates the name display correspondence between LATTE folder names (e.g. "Mary Lee") and grading sheet names (e.g. "Lee,Mary"), by running
+   
        ```
-       $ python name_convert.py <LATTE folder name> 
+      $ cd <path to project>
+      $ python name_convert.py <LATTE folder name> 
        ```
-   4. Check ```conv/latte_grading_conversion.csv``` for the correspondence between folder & grading sheet name display.    5. Then, copy and paste the grading sheet name display to the grading sheet. 
+      For example, if the LATTE folders for each students are saved in ```/path/to/project/root/example_folders```, you can run ```name_convert.py``` by
+       ```
+      $ cd /path/to/project/root
+      $ python name_convert.py example_folders
+       ```
+      Then, examine the prompt the make sure all folders are converted and open the conversion file, which by default is saved at ```conv/latte_grading_conversion.csv```.
+   4. Check ```conv/latte_grading_conversion.csv``` for the correspondence between folder & grading sheet name display    
+   5. Then, copy and paste the grading sheet name display to the grading sheet
         - If any changes are made to the names in the future, make sure to record it in ```conv/latte_grading_conversion.csv``` as well; otherwise, the code will break due to the lack of correspondence.
 
    
@@ -66,36 +119,32 @@ Do the following for each class at the beginning of each semester.
    $ cd <project root path>
    $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias>
    ``` 
-   For example, if all the LATTE folders are saved under ```/path/to/project/A1_submissions/```, the grading sheet saved at the project root is ```A1_grades.csv```, and the assignment has an alias of ```A1```, we will run the following command:
+   
+   For example, if all the LATTE folders are saved under ```/path/to/project/example_folders```, the grading sheet saved at the project root is ```/path/to/project/example_gradesheet.csv```, and you'd like the assignment to have an alias of ```ExampleAssignment```, run the following command:
+   
    ```
    $ cd /path/to/project/
-   $ python grades_out.py A1_submissions A1_grades.csv A1
+   $ python grades_out.py example_folders example_gradesheet.csv ExampleAssignment
    ```
    
    - Note: for the quickest way to fill in the project path after ```cd ``` in most terminal emulators, you can drag the project root folder from your file explorer and release it onto your commandline interface.
-   - Note: if the TA left a comment cell blank, the report will include a "no comment entered" notice. 
+   - Note: if the TA left a comment cell blank, the report will by default include a ```(no comment entered)``` notice for that comment. 
    - If you want to overwrite existing feedback files, run the command with --allow_rewrite:
-   ```
-   $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_rewrite
-   ``` 
+   
+       ```
+       $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_rewrite
+       ``` 
 5. Follow the program prompts to view a few sample reports and determine if you wish to continue with the current format.
     
    - In this step, check especially if the formatting of the file path, content of file path, formatting of the report, and content of the report are all correct and/or as desired.
    - For quality assurance, it is recommended to sample at least 10% of all reports.
 6. After the program is done, the LATTE folders will be populated with feedback file, and the directory containing all the LATTE folders will be ready for compression and bulk-upload back to LATTE 
     - [Bulk upload instruction on LATTE](https://moodle2.brandeis.edu/mod/page/view.php?id=929709)
+    
 # Grading Sheet Item Content Convention Do's and Don'ts
-## The Name column
+## Convention for all columns
 Do:
-- Make sure the one and only column containing students' names is named exactly ```Name``` (Case must match)
-
-Don't:
-- Have any other non-name column named as ```Name```.
-
-## Columns of score-containing sub-sections (e.g. Pt 1 (1-2) /.45, etc.)
-
-Do:
-- Add one or more indentation marks (```>```) to the beginning of certain items (e.g. >Pt 1...); for each indentation mark, 4 spaces will be added before the item in the report. For non-comment columns with no indentation marks (usually "total" columns), an empty line will be appended for an effect of emphasis.
+- for any non-name column, you can add one or more indentation marks (```>```) to *the beginning* of an item (e.g. >Pt 1...); for each indentation mark, 4 spaces will be added before the item in the report. For non-comment columns with no indentation marks (usually "total" columns), an empty line will be appended for an effect of emphasis.
     
     e.g. if in the grading sheet, we have an item:
     
@@ -107,19 +156,45 @@ Do:
     ```
             Pt 1. Explanation, motivation, demonstration: .25/.45
     ```
-    Notice each ">" indentation mark has been converted to 4 spaces.
+    Notice each ```>``` indentation mark has been converted to 4 spaces.
     
-    e.g. alternatively, if we have:
+    Alternatively, if we have do not have any indentation marks, a line break will be inserted at the beginning. For example, consider the following column name:
     
     ```
     Homework 1 TOTAL Grade
     ```
     For a student scoring A-, in the report we will have:
     ```
-    Homework 1 TOTAL Grade: A-
     
+    Homework 1 TOTAL Grade: A-
     ```
-    Notice an empty line has been appended.
+    Notice an empty line has been inserted in the front.
+    
+Don't:
+- Don't include colons at the end, as this will be handled by the script. For example, if you want to display ```Total: 6/6``` in the report, then the column name should be ```Total /6``` instead of ```Total: /6```.
+- Don't name any non-name column as ```Name```
+
+## The Name column
+Example of a name column:
+
+![name column](pic/name_col.png)
+
+Do:
+- Make sure the one and only column containing students' names is named exactly ```Name``` (Case must match)
+
+Don't:
+- Don't have any other non-name column named as ```Name```.
+
+## Columns of score-containing sub-sections (e.g. Pt 1 (1-2) /.45, etc.)
+Examples of score columns:
+
+![score columns](pic/score_col.png)
+
+Do:
+- Format the total score in Grade Sheet in one of the following ways:
+    - number(s) both before and after the decimal point: ```Part 1. Total /d.(d+)```, e.g. ```Part 1. Total /1.25``` or ```Part 1. Total /0.7```
+    - no number before decimal point: ```Part 1. Total /.(d+)```, e.g. ```Part 1. Total /.5```
+
 - Have one or more whitespace character (e.g. regular spaces, tabs, alt+Enter line breaks in Excel) between the item description and the subsection total (e.g. /.45). E.g. an item title cell can look like:
     ```
     >Pt 1. Explanation, motivation, demonstration
@@ -149,12 +224,16 @@ Don't:
 - No need to make A#.print sheet columns "look nice" any more, i.e. no more dashes and/or abbreviations just to fit the item name in a narrow cell
 - Don't include the word "comment" as part of the title, unless this column is intended for comments, or some 0 values under it may not be displayed properly.
 ## Comment columns
+Example of a comment column:
+
+![comment column](pic/comment_col.png)
+
 Do:
 - **Always include word "comment"** (case-insensitive) in the comment column(s) 
 - Feel free to use line breaks (alt + enter in Google Sheets and Excel) in the comments, the format will be properly indented.
 
 Don't:
-- Comment display does NOT support section score display like its non-comment counterparts, e.g. if for any reason we have an item such as 
+- Don't include total score in comment columns. Comment display does NOT support section score display like its non-comment counterparts, e.g. if for any reason we have an item such as 
     ```
     Account comments 
     /.25
@@ -191,11 +270,11 @@ However, in the case where we truly want to overwrite the files, for example, af
 
 ## Rounding Issues in .xlsx
 ### Problem
-We might see the following output:
+We might see the following output, especially when reading from an .xlsx spreadsheet:
 ```
 Hwk 1 Total: 5.313000000000001/6
 ```
 where as the grade is 5.313, without the trailing 0s and 1. 
-This is possibly due to float precision in ```pandas.DataFrame.read_excel()```.
+This is possibly due to the float precision issue in ```pandas.DataFrame.read_excel()```.
 ### Solution
-If this happens, switch to using .csv grade sheet instead. We may be able to fix this in code in the future.
+If this happens, switch to exporting and using a .csv-format grading spreadsheet instead. We may be able to fix this in code in the future.

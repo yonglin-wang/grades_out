@@ -12,18 +12,13 @@ Currently, cannot deal with:
 import os
 import random
 import sys
+from collections import OrderedDict
 from argparse import ArgumentParser
 import pandas as pd
-from collections import OrderedDict
-
-# Libs
 
 # Own modules
-# from {path} import {class}
 import name_convert
 from grading_item import GradingItem
-
-# […]
 
 __author__ = 'Yonglin Wang'
 __version__ = '0.1.0'
@@ -120,7 +115,11 @@ class GradesOut:
         all_subs = set([f.path for f in os.scandir(self.latte_path) if f.is_dir()])
 
         # load name conversion dictionary
-        conv_dict = pd.read_csv(NAME_CONV_PATH, index_col=GRADING_NAME).to_dict(orient="index", into=OrderedDict)
+        try:
+            conv_dict = pd.read_csv(NAME_CONV_PATH, index_col=GRADING_NAME).to_dict(orient="index", into=OrderedDict)
+        except FileNotFoundError:
+            raise FileNotFoundError("Cannot find name conversion .csv file at %s. Please refer to README and "
+                                    "use name_convert.py to generate one.")
         # flatten the 2D dictionary
         self.conv_dict = dict([(name, list(conv_dict[name].values())[0]) for name in conv_dict.keys()])
 
@@ -187,7 +186,7 @@ class GradesOut:
             latte_name = self.conv_dict[grading_name]
         except KeyError:
             raise KeyError(
-                "Cannot find %s in the conversion .csv file. Check spelling or add new name conversion entry."
+                "Cannot find %s in the conversion .csv file. Check spelling or add a new name conversion entry."
                 % grading_name)
 
         match = [d for d in all_subs if latte_name in d]
@@ -304,13 +303,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
 
     # ### for testing purposes only
     # instantiate a GradesOut object from user input
     # go = GradesOut("test", "test.xlsx", assn_alias="A1",
     #                sheet_name="A1.print")
 
-    # go = GradesOut("test", "test2.csv", assn_alias="A1")
-    # # go.df.to_csv("output2.csv")
-    # go.distribute_grade()
+    go = GradesOut("example_folders", "example_gradesheet.csv", assn_alias="ExampleAssignment")
+    # go.df.to_csv("output2.csv")
+    go.distribute_grade()

@@ -21,7 +21,7 @@ INDENT_MARK = ">"
 SPACES_PER_INDENT = 4
 
 # ###Regex for extracting total score from item
-SCORE_PATTERN = r"\s*\/\d?\.?\d+"
+SCORE_PATTERN = r"\s+\/\d*\.?\d+"
 
 class GradingItem:
     def __init__(self, item: str):
@@ -38,9 +38,9 @@ class GradingItem:
                 self.prefix += "\t".expandtabs(SPACES_PER_INDENT)
                 # consume >
                 item = item[len(INDENT_MARK):]
-        # for visual, add empty line after non-subscore fields
+        # for visual, add empty line before non-subscore fields
         else:
-            self.suffix += "\n"
+            self.prefix += "\n"
 
         # if comment item
         if "comment" in item.lower():
@@ -50,9 +50,10 @@ class GradingItem:
             score = findall(SCORE_PATTERN, item)
             if score:
                 # record suffix (taking off surrounding white space)
-                self.suffix = score[-1].strip() + self.suffix
-                # remove suffix
-                item = sub(SCORE_PATTERN, "", item).strip()
+                s = score[-1].strip()
+                self.suffix = s + self.suffix
+                # remove recorded score substring, assuming it's the last bit
+                item = item[:item.rfind(s)].strip()
 
         # lastly, add prefix
         self.prefix += item.replace("\n", " ")
@@ -64,7 +65,7 @@ class GradingItem:
         :return:
         """
         # added flexible tab to accommodate line breaks in comments, 1 for ":" + 1 for space = 2
-        info = info.replace("\n", "\n\t".expandtabs(len(self.prefix) + 2))
+        info = info.replace("\n", "\n\t".expandtabs(len(self.prefix.lstrip()) + 2))
         if self.is_comment:
             if info == "0" or info == "":
                 info = NO_COMMENT_NOTICE
@@ -74,6 +75,14 @@ class GradingItem:
 if __name__ == "__main__":
     gi = GradingItem('>Pt 1\n(1-2)\n  \n/.5')
     print(gi.insert_info("0.4"))
+
+    gi = GradingItem('>Pt 1\n(1-2) /1.0')
+    print(gi.insert_info("0.4"))
+
+    gi = GradingItem('>a safe /.5 and Pt 1\n(1-2)\n  \n/.5')
+    print(gi.insert_info("0.4"))
+
+
     print("Next line here")
     gi = GradingItem('>>Comment here')
     print(gi.insert_info("Hey not saying a lot but \ngotta have a line break \nblah blah blah"))
@@ -83,3 +92,6 @@ if __name__ == "__main__":
 
     gi = GradingItem('>Comment here')
     print(gi.insert_info("Hey not saying a lot but \ngotta have a line break \nblah blah blah"))
+
+    gi = GradingItem('Comment here')
+    print(gi.insert_info("Good job!\nNow there's shouldn't be indentations"))
