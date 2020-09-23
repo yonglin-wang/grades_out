@@ -72,7 +72,7 @@ Utility code for generating reports. You do not need to run this script through 
 Note that you can run all of the example commands in this section with the pre-packaged [example grading sheet](example_gradesheet.csv) and [example folders](example_folders). 
 ## One-time Set-up (at the start of each course)
 Do the following for each class at the beginning of each semester. 
-- Clone this repository (more detailed, visual instruction [here](https://blogs.sap.com/2019/07/12/how-to-clone-a-github-repository-to-local-mac-computer/)) to your computer by running the following two commands (e.g. Terminal on macOS or Cygwin on Windows)
+- Clone this repository (more detailed, visual instruction [here](https://blogs.sap.com/2019/07/12/how-to-clone-a-github-repository-to-local-mac-computer/)) to your computer by running the following two commands (e.g. on Terminal on macOS or Cygwin on Windows)
 
    ```
    $ cd /path/to/some/folder/
