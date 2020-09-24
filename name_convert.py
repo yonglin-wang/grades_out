@@ -67,7 +67,6 @@ def generate_csv_from_folder(dir: str):
     latte_grading_pairs = [(latte_name, convert_name_for_grading(latte_name)) for latte_name in sub_names]
     df = pd.DataFrame(latte_grading_pairs, columns=[LATTE_COL_NAME, GRADING_COL_NAME])
     df = df.sort_values(GRADING_COL_NAME)
-    # TODO Not actually saved in conv/
     df.to_csv(OUTPUT_PATH, index=False)
 
     print("Conversion done! Converted names can be found at %s" % OUTPUT_PATH)

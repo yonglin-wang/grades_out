@@ -80,7 +80,7 @@ def get_df_from_path(f_path, sheet_n=None):
 class GradesOut:
 
     def __init__(self, student_folder_path: str, file_name: str, assn_alias="submission", sheet_name=None,
-                 verbose=True):
+                 verbose=True, disable_not_found=False):
         # record assignment shorthand
         self.assn_alias = assn_alias
 
@@ -119,13 +119,14 @@ class GradesOut:
             conv_dict = pd.read_csv(NAME_CONV_PATH, index_col=GRADING_NAME).to_dict(orient="index", into=OrderedDict)
         except FileNotFoundError:
             raise FileNotFoundError("Cannot find name conversion .csv file at %s. Please refer to README and "
-                                    "use name_convert.py to generate one.")
+                                    "use name_convert.py to generate one." % NAME_CONV_PATH)
         # flatten the 2D dictionary
         self.conv_dict = dict([(name, list(conv_dict[name].values())[0]) for name in conv_dict.keys()])
 
         # ensure all names have one and only one corresponding directory
         self.save_dir = dict(
-            [(name, self.match_name_to_folder(name.strip(), all_subs)) for name in self.all_info.keys()])
+            [(name, self.match_name_to_folder(name.strip(), all_subs, disable_not_found=disable_not_found))
+             for name in self.all_info.keys()])
 
         # generate grade items
         item_list = self.df.columns.to_list()
@@ -144,11 +145,8 @@ class GradesOut:
 
         # change all na and NaN to an empty string
         self.df.fillna("", inplace=True)
-        # TODO determine if line needed
-        # self.df.replace(np.nan, "", regex=True, inplace=True)
 
         # change all to string
-        # TODO determine if line needed
         self.df = self.df.applymap(str)
 
         # drop first row and set new first row as column name
@@ -166,18 +164,16 @@ class GradesOut:
         :return:
         """
         for grading_name, save_dir in self.save_dir.items():
-            # go over each file under the directory
-            for f in os.scandir(save_dir):
-                # check if file exists under path
-                if os.path.exists(os.path.join(save_dir, self.generate_file_name(grading_name))):
-                    if warning_only:
-                        print("File %s already exists in %s. It will be overwritten by the program."
-                              % (self.generate_file_name(grading_name), save_dir))
-                    else:
-                        raise FileExistsError("File %s already exists in %s. Consider delete or rename it."
-                                              % (self.generate_file_name(grading_name), save_dir))
+            # check if file exists under path
+            if os.path.exists(os.path.join(save_dir, self.generate_file_name(grading_name))):
+                if warning_only:
+                    print("File %s already exists in %s. It will be overwritten by the program."
+                          % (self.generate_file_name(grading_name), save_dir))
+                else:
+                    raise FileExistsError("File %s already exists in %s. Consider delete or rename it."
+                                          % (self.generate_file_name(grading_name), save_dir))
 
-    def match_name_to_folder(self, grading_name: str, all_subs: set) -> str:
+    def match_name_to_folder(self, grading_name: str, all_subs: set, disable_not_found=False) -> str:
         """
         return corresponding student LATTE folder path based on a given student name on sheet. Ignores [MS]
         :return: string path of student's LATTE folder under the given folder
@@ -186,15 +182,23 @@ class GradesOut:
             latte_name = self.conv_dict[grading_name]
         except KeyError:
             raise KeyError(
-                "Cannot find %s in the conversion .csv file. Check spelling or add a new name conversion entry."
-                % grading_name)
+                "Cannot find name %s in %s. Check spelling or add a new name conversion entry."
+                % (grading_name, NAME_CONV_PATH))
 
         match = [d for d in all_subs if latte_name in d]
 
         # error out if folder not found
         if not match:
-            raise ValueError("Cannot find LATTE folder containing name %s. Check LATTE folder name spelling on "
-                             "conversion file." % latte_name)
+            # raise error if no missing folder is allowed
+            if disable_not_found:
+                raise ValueError("Cannot find LATTE folder containing name %s. Check LATTE folder name spelling on "
+                                 "conversion file or if LATTE folder exists." % latte_name)
+            # if allow not found student folder, save the file at LATTE parent folder
+            else:
+                print("Cannot find LATTE folder containing name %s. The corresponding report will be saved at %s." %
+                      (latte_name, os.path.abspath(self.latte_path)))
+                return self.latte_path
+
         # error out if multiple directories found
         if len(match) > 1:
             raise ValueError(
@@ -237,79 +241,108 @@ class GradesOut:
 
 
 def main():
-    # ###Setting up parser for command line usage
-    parser = ArgumentParser(prog="grades_out.py",
-                            usage="Assignment grade distribution tool.",
-                            description="Generates .txt assignment reports and save report to each student's LATTE "
-                                        "export folders. Requires: 1) a structured folder of student "
-                                        "submissions (obtained from LATTE) and 2) grade sheet "
-                                        "(.csv or .xlsx with sheet name).")
-    parser.add_argument("student_folder",
-                        help="path to parent folder whose immediate subdirectories are student LATTE folders.")
-    parser.add_argument("grading_sheet_file",
-                        help="name of grading sheet file in project root, including file suffix. e.g. A1_grading.csv")
-    parser.add_argument("assignment_alias", help='very short alias of the assignment, to appear in file name of '
-                                                 'generated report (e.g. A1, midterm, final, A2.5')
-    parser.add_argument("--sheet_name", type=str, default=None,
-                        help="required for .xlsx files only. Specify name of a specific sheet after this argument. ("
-                             "e.g. --sheet_name A1.print)")
-    parser.add_argument("--allow_rewrite", action="store_true",
-                        help="allow program to overwrite existing feedback files with the same name as this program "
-                             "generates.")
+    try:
+        # ###Setting up parser for command line usage
+        parser = ArgumentParser(prog="grades_out.py",
+                                usage="Assignment grade distribution tool.",
+                                description="Generates .txt assignment reports and save report to each student's LATTE "
+                                            "export folders. Requires: 1) a structured folder of student "
+                                            "submissions (obtained from LATTE) and 2) grade sheet "
+                                            "(.csv or .xlsx with sheet name, .csv recommended).")
+        parser.add_argument("student_folder",
+                            help="path to parent folder whose immediate subdirectories are student LATTE folders.")
+        parser.add_argument("grading_sheet_file",
+                            help="name of grading sheet file in project root, including file suffix. e.g. A1_grading.csv")
+        parser.add_argument("assignment_alias", help='very short alias of the assignment, to appear in file name of '
+                                                     'generated report (e.g. A1, midterm, final, A2.5')
+        parser.add_argument("--sheet_name", type=str, default=None,
+                            help="required for .xlsx files only. Specify name of a specific sheet after this argument. ("
+                                 "e.g. --sheet_name A1.print)")
+        parser.add_argument("--allow_overwrite", action="store_true",
+                            help="allow program to overwrite existing feedback files with the same name as this program "
+                                 "generates.")
+        parser.add_argument("--disable_not_found", action="store_true",
+                            help="for students with no LATTE submission folders, disable program to save their reports under"
+                                 "LATTE parent directory and raise exception instead.")
 
-    args = parser.parse_args()
+        args = parser.parse_args()
 
-    # instantiate a GradesOut object from user input
-    go = GradesOut(args.student_folder, args.grading_sheet_file, assn_alias=args.assignment_alias,
-                   sheet_name=args.sheet_name)
+        # instantiate a GradesOut object from user input
+        go = GradesOut(args.student_folder, args.grading_sheet_file, assn_alias=args.assignment_alias,
+                       sheet_name=args.sheet_name, disable_not_found=args.disable_not_found)
 
-    # check if file name conflict exists
-    go.validate_files(warning_only=args.allow_rewrite)
+        # check if file name conflict exists
+        go.validate_files(warning_only=args.allow_overwrite)
 
-    # print a random report for user to preview before saving the changes
-    def print_random_report():
-        print("\nPreviewing report output. No reports will be saved until you approve it in the next question. ")
-        sample_name, sample_entry = random.choice(list(go.all_info.items()))
-
-        # show where the report will be saved
-        print("-" * 20 + "\nThe following report will be generated and saved as %s: " %
-              os.path.join(go.save_dir[sample_name], go.generate_file_name(sample_name)))
-
-        # generate the main report
-        print(go.generate_report(sample_name.replace(",", ", "), sample_entry))
-
+        # Pause to let the user examine the prompt, enter any string to continue.
         print("-" * 20)
+        print("Please examine the prompts above carefully. No reports have been generated yet.\n"
+              "Enter \"quit\" if you wish to quit the program. \n"
+              "Otherwise, enter anything else to preview the reports before they are saved.")
+        pre_answer = input(">")
 
-    # preview report for user
-    print_random_report()
-
-    answer = ""
-
-    while answer.lower().strip() != "yes":
-        answer = input("Enter \"yes\" to proceed to generating and saving all reports to student folders.\n"
-                       "Enter \"more\" to see another randomly selected sample.\n"
-                       "Enter anything else to exit program without generating any reports.\n>")
-        if answer.lower().strip() == "more":
-            # preview report for user
-            print_random_report()
-        elif answer.lower().strip() != "yes":
+        if pre_answer.strip().lower() == "quit":
             print("OK. No reports have been generated or saved.")
             sys.exit()
 
-    # finally, distribute the output!
-    print("Distributing grade to student folders...", end="")
-    go.distribute_grade()
-    print("Done!")
+        # print a random report for user to preview before saving the changes
+        def print_random_report():
+            print("\nPreviewing report output. No reports will be saved until you approve it in the next question. ")
+            sample_name, sample_entry = random.choice(list(go.all_info.items()))
+
+            # show where the report will be saved
+            print("-" * 20 + "\nThe following report will be generated and saved as %s: " %
+                  os.path.join(go.save_dir[sample_name], go.generate_file_name(sample_name)))
+
+            # generate the main report
+            print(go.generate_report(sample_name.replace(",", ", "), sample_entry))
+
+            print("-" * 20)
+
+        # preview report for user
+        print_random_report()
+
+        answer = ""
+
+        while answer.lower().strip() != "yes":
+            answer = input("Enter \"yes\" to proceed to generating and saving all reports to student folders.\n"
+                           "Enter \"more\" to see another randomly selected sample.\n"
+                           "Enter anything else to exit program without generating any reports.\n>")
+            if answer.lower().strip() == "more":
+                # preview report for user
+                print_random_report()
+            elif answer.lower().strip() != "yes":
+                print("OK. No reports have been generated or saved.")
+                sys.exit()
+
+    except Exception as exc:
+        print("An error happened while preparing for report distribution:\n"
+              "\"%s: %s\"\n"
+              "The program has ended without creating any new files." % (type(exc).__name__, str(exc)))
+        sys.exit()
+
+    try:
+        # finally, distribute the output!
+        print("Distributing grade to student folders...", end="")
+        go.distribute_grade()
+        print("Done!")
+    except Exception as exc:
+        print("An error happened during report distribution:\n"
+              "\"%s: %s\"\n"
+              "The program has ended. It is possible that some reports have been created. Please check the LATTE "
+              "directories to remove any unwanted files, or use the --allow_overwrite option to overwrite them in the "
+              "next command." % (type(exc).__name__, str(exc)))
+        sys.exit()
 
 
 if __name__ == "__main__":
-    # main()
+    main()
 
     # ### for testing purposes only
     # instantiate a GradesOut object from user input
     # go = GradesOut("test", "test.xlsx", assn_alias="A1",
     #                sheet_name="A1.print")
 
-    go = GradesOut("example_folders", "example_gradesheet.csv", assn_alias="ExampleAssignment")
-    # go.df.to_csv("output2.csv")
-    go.distribute_grade()
+    # go = GradesOut("example_folders", "example_gradesheet.csv", assn_alias="ExampleAssignment")
+    # # go.df.to_csv("output2.csv")
+    # go.distribute_grade()

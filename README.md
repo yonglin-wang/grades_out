@@ -128,12 +128,20 @@ Do the following for each class at the beginning of each semester.
    ```
    
    - Note: for the quickest way to fill in the project path after ```cd ``` in most terminal emulators, you can drag the project root folder from your file explorer and release it onto your commandline interface.
-   - Note: if the TA left a comment cell blank, the report will by default include a ```(no comment entered)``` notice for that comment. 
-   - If you want to overwrite existing feedback files, run the command with --allow_rewrite:
+   - Note: if a comment cell is left blank, the report will by default include a ```(no comment entered)``` notice for that comment. 
+   - Note: if a non-comment cell is left blank, the report will by default include a ```(no value entered)``` notice for that comment. 
+   - If you want to overwrite existing feedback files, run the command with ```--allow_overwrite```:
    
        ```
-       $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_rewrite
+       $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_overwrite
        ``` 
+     
+   - Currently, for students with available feedback but without a LATTE folder, the program will save their report immediately under the LATTE parent folder since they do not belong to any subdirectories. If you want the program to error out on such case instead, run the command with ```--disable_not_found```:
+   
+       ```
+       $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --disable_not_found
+       ``` 
+     
 5. Follow the program prompts to view a few sample reports and determine if you wish to continue with the current format.
     
    - In this step, check especially if the formatting of the file path, content of file path, formatting of the report, and content of the report are all correct and/or as desired.
@@ -242,8 +250,8 @@ Don't:
   ```
   Account comments /.25: <some input from grading sheet>
   ```
-# Known Issues
-## Displaying non-ascii names
+# Known Issues and FAQ
+## Displaying non-ascii names and Unicode errors
 ### Problem
 If a non-ascii name is pasted and saved to ```conv/latte_grading_conversion.csv``` through a fancier word processor (such as Excel and Numbers), its encoding will confuse the program, causing either a program crash or the non-ascii character to be skipped.
 
@@ -255,17 +263,20 @@ UnicodeDecodeError: 'utf-8' codec can't decode byte 0x8e in position 9: invalid 
 ```
 
 ### Solution
+
+Genereal rule of thumb for Unicode errors: *do NOT use Excel to open any .csv file created for this project* as it will tamper with the encoding. For example, it is OK to save a utf-8 encoded .csv file after the file is generated.
+
 Instead of a fancy word processor, do the pasting and saving of the non-ascii character to ```conv/latte_grading_conversion.csv``` in a simpler program (e.g. TextEdit, Aquamacs, or vim if you may). Saving the .csv file there can allow the encoding to be recognizable by Python for most of the time. 
 
-## Students with Same LATTE name
+## Students with same LATTE name
 Not yet tested. The solution largely depends on how LATTE handles it in the folder name. Currently, the program is designed to error out in this situation, before generating any reports in any student's folder. 
 
-## Student Naming Files Same as Report File
+## Report file name already exists
 To prevent undesirable overwriting, the program currently validates report saving paths before generating any reports. It errors out if a file with the same report name already exists under a student's folder.
 
-However, in the case where we truly want to overwrite the files, for example, after making changes to grading columns after the reports have been generated, you can always trap the error by adding --allow_rewrite:
+However, in the case where we truly want to overwrite the files, for example, after making changes to grading columns after the reports have been generated, you can always trap the error by adding --allow_overwrite:
    ```
-    $ python3 grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_rewrite
+    $ python3 grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_overwrite
    ``` 
 
 ## Rounding Issues in .xlsx
@@ -277,4 +288,11 @@ Hwk 1 Total: 5.313000000000001/6
 where as the grade is 5.313, without the trailing 0s and 1. 
 This is possibly due to the float precision issue in ```pandas.DataFrame.read_excel()```.
 ### Solution
+General piece of advice: use .csv for this project and avoid .xlsx, even though it is supported. 
+
 If this happens, switch to exporting and using a .csv-format grading spreadsheet instead. We may be able to fix this in code in the future.
+
+## What happens if student did not submit on LATTE but has score?
+In this case, the report of that student will be generated immediately under the LATTE parent folder. For those reports, you will need to upload them to LATTE manually. 
+
+Note that saving to parent directory could also happen when a student submits their work but drops the course after grading starts, which will cause LATTE to hide their submission folders. In this case, you do not need to upload the report or do anything with it.

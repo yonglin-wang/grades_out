@@ -14,7 +14,10 @@ __maintainer__ = 'Yonglin Wang'
 __email__ = 'yonglinw@brandeis.edu'
 
 # what to display if no comment found:
-NO_COMMENT_NOTICE = "(No comment was entered)"
+NO_COMMENT_NOTICE = "(No comment entered)"
+
+# what to display if no value entered (for non-comment columns)
+NO_VALUE_NOTICE = "(No value entered)"
 
 # indentation mark, each mark equals 4 spaces
 INDENT_MARK = ">"
@@ -69,6 +72,9 @@ class GradingItem:
         if self.is_comment:
             if info == "0" or info == "":
                 info = NO_COMMENT_NOTICE
+        else:
+            if info == "":
+                info = NO_VALUE_NOTICE
 
         return "%s: %s%s\n" % (self.prefix, info.strip(), self.suffix)
 
@@ -81,6 +87,7 @@ if __name__ == "__main__":
 
     gi = GradingItem('>a safe /.5 and Pt 1\n(1-2)\n  \n/.5')
     print(gi.insert_info("0.4"))
+    print(gi.insert_info(""))
 
 
     print("Next line here")
