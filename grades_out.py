@@ -244,7 +244,6 @@ def main():
     try:
         # ###Setting up parser for command line usage
         parser = ArgumentParser(prog="grades_out.py",
-                                usage="Assignment grade distribution tool.",
                                 description="Generates .txt assignment reports and save report to each student's LATTE "
                                             "export folders. Requires: 1) a structured folder of student "
                                             "submissions (obtained from LATTE) and 2) grade sheet "
