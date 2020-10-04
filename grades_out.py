@@ -290,7 +290,7 @@ def main():
             sample_name, sample_entry = random.choice(list(go.all_info.items()))
 
             # show where the report will be saved
-            print("-" * 20 + "\nThe following report will be generated and saved as %s: " %
+            print("-" * 20 + "\nThe following report will be generated and saved as %s: \n" %
                   os.path.join(go.save_dir[sample_name], go.generate_file_name(sample_name)))
 
             # generate the main report

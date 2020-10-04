@@ -23,9 +23,10 @@ Feel free to navigate the project by
       $ which python
       ```
       to see if the output directory now correctly ends with ```anaconda3/bin```.
-      > If not, try changing ```anaconda3``` to ```anaconda``` and try again.
-    
-    - To permanently change the default Python, 
+      
+        > If not, try changing ```anaconda3``` to ```anaconda``` and try again.
+      
+    - (Recommended) to permanently change the default Python, 
         1. figure out the working version export line from the above steps.
         2. Use command
             ```
@@ -34,11 +35,13 @@ Feel free to navigate the project by
             to open the file in the default text editor of your system
         3. Edit ```~/.bash_profile``` in your default editor by adding the ```export``` line at the beginning of the file and save it
         4. Now the change is made. Check it by restarting your command line emulator and type ```$ which python``` to see if the path is now set to the Python path you've just specified in ```~/.bash_profile```. 
+        
 - [pandas](https://pandas.pydata.org/pandas-docs/stable/getting_started/install.html)
     - After you have the correct default python program as shown above, Run the following command to install pandas
       ```
       $ python -m pip install --user pandas
       ```
+      
 - [Nameparser](https://pypi.org/project/nameparser/)
     - Similar to pandas, run the following
     ```
@@ -67,8 +70,44 @@ Utility code for generating reports. You do not need to run this script through 
 
 
 ...TBC
+# Workflow from/to LATTE
+## Downloading assignment folders
+
+The following instructions will walk you through downloading submission folders from LATTE. 
+1. On LATTE, click on the submission portal.
+2. Click ```View all submissions``` under "Grading summary"
+3. Right under the submission title, click on "Grading action" and then select ```Download all submissions``` in the drop down menu. A .zip file should then be automatically downloaded.
+4. Decompress the .zip file , and now you will have all the submission folders for this assignment. Feel free to change the name of the decompressed folder to a shorter name for convenience in running scripts later (e.g. changing ```203LING-120B-1-Assignment 3, More on Constituency in NPs – due Thurs Sept 24-1245460``` to ```A3```).
+
+    >Note: if a student has not handed in any submission by the time of the download, there will be no folder corresponding to that student in the downloaded .zip file.
+5. Now resume to your previous instructions for either [one time set up](#one-time-set-up-at-the-start-of-each-course) or [grade distribution](#distribute-reports-for-each-assignment)
+
+## Uploading folders populated with feedback file back to LATTE
+There are two types of feedback files: 
+- regular ones generated under corresponding folders
+- stray ones generated under LATTE parent folder because a folder with corresponding name cannot be found.
+### 1. Regular feedback files
+1. Compress the immediate parent folder of the LATTE submission folders into a .zip file. Any name for the .zip file would be fine.
+    > Note: you do not need to delete the stray files in this step. LATTE ignores them automatically.
+1. On LATTE, click on the submission portal.
+2. Click ```View all submissions``` under "Grading summary"
+3. Right under the submission title, click on "Grading action" and then select ```Upload multiple feedback files in a zip``` in the drop down menu. 
+4. Upload the file and click ```Import feedback file(s)```, then follow the prompt to finish uploading.
+
+### 2. Stray feedback files
+These files need to be uploaded to each student manually via LATTE.
+1. On LATTE, click on the submission portal.
+2. Click ```View all submissions``` under "Grading summary"
+3. For each stray file: 
+    - find the corresponding student's submission row, click on ```Grade``` button
+    - once in grading view, on the review panel (the one with "Submission", "Grade", and "Feedback comments" etc.), locate "Feedback files"
+    - upload the .txt report into "Feedback files"
+    - Deselect "Notify students" if needed
+    - Click ```Save changes```
+
 
 # Set-up and Usage
+
 Note that you can run all of the example commands in this section with the pre-packaged [example grading sheet](example_gradesheet.csv) and [example folders](example_folders). 
 ## One-time Set-up (at the start of each course)
 Do the following for each class at the beginning of each semester. 
@@ -81,13 +120,13 @@ Do the following for each class at the beginning of each semester.
    Now, you should be able to find the project at ```/path/to/some/folder/grades_out```
 - Create name conversion .csv file by
    1. Assign work (e.g. introduction) to the students and wait for everyone to submit. Meanwhile, make sure your machine meets the [system prerequisites](#system-prerequisite). 
-   2. Download and decompress the .zip all students' LATTE folders and put it under project root.
+   2. [Download and decompress the .zip all students' LATTE folders](#workflow-fromto-latte) and put it under project root.
    3. Run name_convert.py, which generates the name display correspondence between LATTE folder names (e.g. "Mary Lee") and grading sheet names (e.g. "Lee,Mary"), by running
    
        ```
       $ cd <path to project>
       $ python name_convert.py <LATTE folder name> 
-       ```
+      ```
       For example, if the LATTE folders for each students are saved in ```/path/to/project/root/example_folders```, you can run ```name_convert.py``` by
        ```
       $ cd /path/to/project/root
@@ -96,8 +135,8 @@ Do the following for each class at the beginning of each semester.
       Then, examine the prompt the make sure all folders are converted and open the conversion file, which by default is saved at ```conv/latte_grading_conversion.csv```.
    4. Check ```conv/latte_grading_conversion.csv``` for the correspondence between folder & grading sheet name display    
    5. Then, copy and paste the grading sheet name display to the grading sheet
-        - If any changes are made to the names in the future, make sure to record it in ```conv/latte_grading_conversion.csv``` as well; otherwise, the code will break due to the lack of correspondence.
-
+        
+     - If any changes are made to the names in the future, make sure to record it in ```conv/latte_grading_conversion.csv``` as well; otherwise, the code will break due to the lack of correspondence.
    
 - It is recommended that **a copy of this project be created for each class** (e.g. one for Syntax II and one for Typology), because the file containing name display correspondence (i.e. latte_grading_conversion.csv) is specific for each class and the program currently does not support having multiples of such file.
 
@@ -107,18 +146,27 @@ Do the following for each class at the beginning of each semester.
     2. copy-paste the names under ```Name on Grading Sheet``` column from the .csv file on to the grading Google Sheets
 
 ## Distribute Reports (for each assignment)
+- if you do not have a copy of the scripts on your computer already: clone this repository (more detailed, visual instruction [here](https://blogs.sap.com/2019/07/12/how-to-clone-a-github-repository-to-local-mac-computer/)) to your computer by running the following two commands (e.g. on Terminal on macOS or Cygwin on Windows)
+
+   ```
+   $ cd /path/to/some/folder/
+   $ git clone https://github.com/yonglin-wang/grades_out.git
+   ```
+   Now, you should be able to find the project at ```/path/to/some/folder/grades_out```
+
 1. Starting from the Google Sheet in the browser, "prettify" it by doing the following:
     - clear out any #REF! errors on the sheet (just in case, but our program should be able to handle them)
     - configure the column names based on [grading item configuration guidelines](#grading-sheet-item-content-convention-dos-and-donts)
     - refer to [the grading sheet template file](template.csv) for a general sense of using formats and styles
 2. Download the grading Google Sheet as either .csv (current sheet, UTF-8 encoding) or .xlsx and save it to project root.
+    
     - In the latter case, take note of the sheet name. Note that, though both are supported, in general, **.csv format is encouraged** for faster processing.
-3. Meanwhile, download the submission folders as a .zip from LATTE and decompress the .zip file into one (1) parent folder under project root. Then, this parent folder's immediate subdirectories should be each student's submission folder with a pattern of ```<student name>_<ID digits>_assignsubmission_file_```.
+3. Meanwhile, [download the submission folders as a .zip from LATTE](#workflow-fromto-latte) and decompress the .zip file into one (1) parent folder under project root. Then, this parent folder's immediate subdirectories should be each student's submission folder with a pattern of ```<student name>_<ID digits>_assignsubmission_file_```.
 4. In Terminal on Mac (or any command line interface of your choice), do the following
    ```
    $ cd <project root path>
    $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias>
-   ``` 
+   ```
    
    For example, if all the LATTE folders are saved under ```/path/to/project/example_folders```, the grading sheet saved at the project root is ```/path/to/project/example_gradesheet.csv```, and you'd like the assignment to have an alias of ```ExampleAssignment```, run the following command:
    
@@ -134,26 +182,25 @@ Do the following for each class at the beginning of each semester.
    
        ```
        $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_overwrite
-       ``` 
+       ```
      
    - Currently, for students with available feedback but without a LATTE folder, the program will save their report immediately under the LATTE parent folder since they do not belong to any subdirectories. If you want the program to error out on such case instead, run the command with ```--disable_not_found```:
    
        ```
        $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --disable_not_found
-       ``` 
-     
+       ```
+   
 5. Follow the program prompts to view a few sample reports and determine if you wish to continue with the current format.
-    
+  
    - In this step, check especially if the formatting of the file path, content of file path, formatting of the report, and content of the report are all correct and/or as desired.
    - For quality assurance, it is recommended to sample at least 10% of all reports.
-6. After the program is done, the LATTE folders will be populated with feedback file, and the directory containing all the LATTE folders will be ready for compression and bulk-upload back to LATTE 
-    - [Bulk upload instruction on LATTE](https://moodle2.brandeis.edu/mod/page/view.php?id=929709)
+6. After the program is done, the LATTE folders will be populated with feedback file, and the directory containing all the LATTE folders will be ready for [compression and bulk-upload back to LATTE](#uploading-folders-populated-with-feedback-file-back-to-latte)
     
 # Grading Sheet Item Content Convention Do's and Don'ts
 ## Convention for all columns
 Do:
 - for any non-name column, you can add one or more indentation marks (```>```) to *the beginning* of an item (e.g. >Pt 1...); for each indentation mark, 4 spaces will be added before the item in the report. For non-comment columns with no indentation marks (usually "total" columns), an empty line will be appended for an effect of emphasis.
-    
+  
     e.g. if in the grading sheet, we have an item:
     
     ```
@@ -178,6 +225,7 @@ Do:
     ```
     Notice an empty line has been inserted in the front.
     
+
 Don't:
 - Don't include colons at the end, as this will be handled by the script. For example, if you want to display ```Total: 6/6``` in the report, then the column name should be ```Total /6``` instead of ```Total: /6```.
 - Don't name any non-name column as ```Name```
@@ -228,6 +276,7 @@ Do:
     ```
     Notice our program no longer recognizes /.45. 
     
+
 Don't:
 - No need to make A#.print sheet columns "look nice" any more, i.e. no more dashes and/or abbreviations just to fit the item name in a narrow cell
 - Don't include the word "comment" as part of the title, unless this column is intended for comments, or some 0 values under it may not be displayed properly.
@@ -277,7 +326,7 @@ To prevent undesirable overwriting, the program currently validates report savin
 However, in the case where we truly want to overwrite the files, for example, after making changes to grading columns after the reports have been generated, you can always trap the error by adding --allow_overwrite:
    ```
     $ python3 grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_overwrite
-   ``` 
+   ```
 
 ## Rounding Issues in .xlsx
 ### Problem
