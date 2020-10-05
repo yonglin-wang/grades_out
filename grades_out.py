@@ -292,11 +292,11 @@ def main():
         # Pause to let the user examine the prompt, enter any string to continue.
         print("-" * 20)
         print("Please examine the prompts above carefully. No reports have been generated yet.\n"
-              "Enter \"quit\" if you wish to quit the program. \n"
+              "Enter \"exit\" if you wish to exit the program. \n"
               "Otherwise, enter anything else to preview the reports before they are saved.")
         pre_answer = input(">")
 
-        if pre_answer.strip().lower() == "quit":
+        if pre_answer.strip().lower() == "exit":
             print("OK. No reports have been generated or saved.")
             sys.exit()
 
@@ -324,7 +324,7 @@ def main():
                            "Enter \"exit\" to exit program without generating any reports.\n"
                            "Enter anything else to see another randomly selected sample.\n>")
             if answer.lower().strip() == "exit":
-                # if explicitly stated to quit
+                # if explicitly stated to exit
                 print("OK. No reports have been generated or saved.")
                 sys.exit()
             elif answer.lower().strip() != "yes":
