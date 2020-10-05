@@ -118,6 +118,7 @@ Do the following for each class at the beginning of each semester.
    $ git clone https://github.com/yonglin-wang/grades_out.git
    ```
    Now, you should be able to find the project at ```/path/to/some/folder/grades_out```
+    > Note: Mac users can substitute opening Terminal and entering ```$ cd /path/to/some/folder/``` with right clicking on ```/path/to/some/folder/``` folder in Finder, and choose ```Services``` \> ```New Terminal at Folder```  in the pop-out menu
 - Create name conversion .csv file by
    1. Assign work (e.g. introduction) to the students and wait for everyone to submit. Meanwhile, make sure your machine meets the [system prerequisites](#system-prerequisite). 
    2. [Download and decompress the .zip all students' LATTE folders](#workflow-fromto-latte) and put it under project root.
@@ -153,6 +154,7 @@ Do the following for each class at the beginning of each semester.
    $ git clone https://github.com/yonglin-wang/grades_out.git
    ```
    Now, you should be able to find the project at ```/path/to/some/folder/grades_out```
+    > Note: Mac users can substitute opening Terminal and entering ```$ cd /path/to/some/folder/``` with right clicking on ```/path/to/some/folder/``` folder in Finder, and choose ```Services``` \> ```New Terminal at Folder``` in the pop-out menu
 
 1. Starting from the Google Sheet in the browser, "prettify" it by doing the following:
     - clear out any #REF! errors on the sheet (just in case, but our program should be able to handle them)
