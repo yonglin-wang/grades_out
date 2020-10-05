@@ -163,15 +163,23 @@ class GradesOut:
         Run this method to make sure no report exists before generation
         :return:
         """
+        # total number of files to be overwritten
+        counter = 0
+
         for grading_name, save_dir in self.save_dir.items():
             # check if file exists under path
             if os.path.exists(os.path.join(save_dir, self.generate_file_name(grading_name))):
                 if warning_only:
                     print("File %s already exists in %s. It will be overwritten by the program."
                           % (self.generate_file_name(grading_name), save_dir))
+                    counter+=1
                 else:
-                    raise FileExistsError("File %s already exists in %s. Consider delete or rename it."
+                    raise FileExistsError("File %s already exists in %s. Consider deleting or renaming."
                                           % (self.generate_file_name(grading_name), save_dir))
+
+        # in the end, report total # of files to overwrite, if allowed and overwritten exists
+        if counter != 0:
+            print("Total number of files to be overwritten: %d" % counter)
 
     def match_name_to_folder(self, grading_name: str, all_subs: set, disable_not_found=False) -> str:
         """
@@ -226,6 +234,10 @@ class GradesOut:
         distributes grades to student LATTE folders
         :return:
         """
+
+        # record total number of reports generated
+        counter = 0
+
         # process each grading entry
         for grading_name, feedback in self.all_info.items():
             # generate file name
@@ -233,8 +245,12 @@ class GradesOut:
 
             # save generated report to given directory
             with open(os.path.join(self.save_dir[grading_name], file_name), "w") as f:
-                # add
+                # generate and save
                 f.write(self.generate_report(grading_name.replace(",", ", "), feedback))
+                # add total reports number
+                counter += 1
+
+        return counter
 
     def generate_file_name(self, grading_name: str) -> str:
         return "%s_%s_Grade_Feedback.txt" % (self.conv_dict[grading_name].replace(" ", "_"), self.assn_alias)
@@ -323,8 +339,9 @@ def main():
     try:
         # finally, distribute the output!
         print("Distributing grade to student folders...", end="")
-        go.distribute_grade()
+        num_saved = go.distribute_grade()
         print("Done!")
+        print("Total number of reports saved: %d" % num_saved)
     except Exception as exc:
         print("An error happened during report distribution:\n"
               "\"%s: %s\"\n"
