@@ -321,14 +321,16 @@ def main():
 
         while answer.lower().strip() != "yes":
             answer = input("Enter \"yes\" to proceed to generating and saving all reports to student folders.\n"
-                           "Enter \"more\" to see another randomly selected sample.\n"
-                           "Enter anything else to exit program without generating any reports.\n>")
-            if answer.lower().strip() == "more":
-                # preview report for user
-                print_random_report()
-            elif answer.lower().strip() != "yes":
+                           "Enter \"exit\" to exit program without generating any reports.\n"
+                           "Enter anything else to see another randomly selected sample.\n>")
+            if answer.lower().strip() == "exit":
+                # if explicitly stated to quit
                 print("OK. No reports have been generated or saved.")
                 sys.exit()
+            elif answer.lower().strip() != "yes":
+                # if command not recognized, preview a report for user
+                print_random_report()
+
 
     except Exception as exc:
         print("An error happened while preparing for report distribution:\n"
