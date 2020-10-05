@@ -147,14 +147,7 @@ Do the following for each class at the beginning of each semester.
     2. copy-paste the names under ```Name on Grading Sheet``` column from the .csv file on to the grading Google Sheets
 
 ## Distribute Reports (for each assignment)
-- if you do not have a copy of the scripts on your computer already: clone this repository (more detailed, visual instruction [here](https://blogs.sap.com/2019/07/12/how-to-clone-a-github-repository-to-local-mac-computer/)) to your computer by running the following two commands (e.g. on Terminal on macOS or Cygwin on Windows)
-
-   ```
-   $ cd /path/to/some/folder/
-   $ git clone https://github.com/yonglin-wang/grades_out.git
-   ```
-   Now, you should be able to find the project at ```/path/to/some/folder/grades_out```
-    > Note: Mac users can substitute opening Terminal and entering ```$ cd /path/to/some/folder/``` with right clicking on ```/path/to/some/folder/``` folder in Finder, and choose ```Services``` \> ```New Terminal at Folder``` in the pop-out menu
+Before we start this section, if you do not have a copy of the scripts on your computer already: copy a ready-to-use project from elsewhere, or [go through the one-time setup script](#one-time-set-up-at-the-start-of-each-course).
 
 1. Starting from the Google Sheet in the browser, "prettify" it by doing the following:
     - clear out any #REF! errors on the sheet (just in case, but our program should be able to handle them)
@@ -169,7 +162,8 @@ Do the following for each class at the beginning of each semester.
    $ cd <project root path>
    $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias>
    ```
-   
+     > Note: again, Mac users can substitute opening Terminal and entering ```$ cd /path/to/some/folder/``` with right clicking on ```/path/to/some/folder/``` folder in Finder, and choose ```Services``` \> ```New Terminal at Folder``` in the pop-out menu
+    
    For example, if all the LATTE folders are saved under ```/path/to/project/example_folders```, the grading sheet saved at the project root is ```/path/to/project/example_gradesheet.csv```, and you'd like the assignment to have an alias of ```ExampleAssignment```, run the following command:
    
    ```
