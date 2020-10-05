@@ -178,10 +178,10 @@ Do the following for each class at the beginning of each semester.
    - Note: for the quickest way to fill in the project path after ```cd ``` in most terminal emulators, you can drag the project root folder from your file explorer and release it onto your commandline interface.
    - Note: if a comment cell is left blank, the report will by default include a ```(no comment entered)``` notice for that comment. 
    - Note: if a non-comment cell is left blank, the report will by default include a ```(no value entered)``` notice for that comment. 
-   - If you want to overwrite existing feedback files, run the command with ```--allow_overwrite```:
+   - If you want to overwrite existing feedback files, run the command with ```--allow_overwrite``` or ```-a```:
    
        ```
-       $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_overwrite
+       $ python grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> -a
        ```
      
    - Currently, for students with available feedback but without a LATTE folder, the program will save their report immediately under the LATTE parent folder since they do not belong to any subdirectories. If you want the program to error out on such case instead, run the command with ```--disable_not_found```:
@@ -323,9 +323,9 @@ Not yet tested. The solution largely depends on how LATTE handles it in the fold
 ## Report file name already exists
 To prevent undesirable overwriting, the program currently validates report saving paths before generating any reports. It errors out if a file with the same report name already exists under a student's folder.
 
-However, in the case where we truly want to overwrite the files, for example, after making changes to grading columns after the reports have been generated, you can always trap the error by adding --allow_overwrite:
+However, in the case where we truly want to overwrite the files, for example, after making changes to grading columns after the reports have been generated, you can always trap the error by adding ```--allow_overwrite``` or simply ```-a```:
    ```
-    $ python3 grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> --allow_overwrite
+    $ python3 grades_out.py <LATTE parent folder> <grading sheet name> <assignment alias> -a
    ```
 
 ## Rounding Issues in .xlsx

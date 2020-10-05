@@ -273,7 +273,7 @@ def main():
         parser.add_argument("--sheet_name", type=str, default=None,
                             help="required for .xlsx files only. Specify name of a specific sheet after this argument. ("
                                  "e.g. --sheet_name A1.print)")
-        parser.add_argument("--allow_overwrite", action="store_true",
+        parser.add_argument("-a", "--allow_overwrite", action="store_true",
                             help="allow program to overwrite existing feedback files with the same name as this program "
                                  "generates.")
         parser.add_argument("--disable_not_found", action="store_true",
