@@ -399,8 +399,9 @@ Titled by date of each release.
 
 ## 10.13.20
 
-- Now allowing the first row to be the actual grading header for the assignment. In this case, Cell A1 must "Name". The formal assignment name (appearing in the first line of the report) will be defaulted to be the same as the assignment alias entered in command line interface. 
+- Now ```grades_out.py``` allows the first row to be the actual grading header for the assignment. In this case, Cell A1 must "Name". The formal assignment name (appearing in the first line of the report) will be defaulted to be the same as the assignment alias entered in command line interface. 
    
     - Previously, the sheet layout is more rigid: only the second row can be the actual header, where Cell A1 is the formal name of the assignment, and Cell A2 must be "Name".
+    - Previously, the script threw ```KeyError: Name``` when A2 is not "Name", which is confusing to the user. This ambiguous error message is prevented in the update.
     
-- Now duplicated column names are prohibited through raising a RuntimeError. See [detailed reasoning here](#can-i-include-duplicated-column-names).
+- Now duplicated column names are prohibited by ```grades_out.py``` through raising a RuntimeError. See [detailed reasoning here](#can-i-include-duplicated-column-names).
