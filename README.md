@@ -347,7 +347,55 @@ No, and the script will in fact throw a RuntimeError if you try to do this. For 
 
 Please be more specific about what each column is for, so that the report can be easier for the student to read and understand. For example, instead of two "Grader Comment", change them to "Grader Comment for Part 1" and "Grader Comment for Part 2".
 
+## How do I update the scripts on my local machine?
+### Check if your local project is up-to-date
+
+In Terminal on Mac (or any command line interface of your choice), do the following
+   ```
+   $ cd <project root path>
+   $ git fetch
+   ```
+     
+   > Note: again, Mac users can substitute opening Terminal and entering ```$ cd /path/to/some/folder/``` with right clicking on ```/path/to/some/folder/``` folder in Finder, and choose ```Services``` \> ```New Terminal at Folder``` in the pop-out menu
+   
+Then, if your script is up-to-date, you will not see any system prompt after ```fetch```. 
+
+Otherwise, if your local project needs to be updated, git may return a message such as the following:
+```
+remote: Enumerating objects: 9, done.
+remote: Counting objects: 100% (9/9), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 5 (delta 4), reused 5 (delta 4), pack-reused 0
+Unpacking objects: 100% (5/5), done.
+From https://github.com/yonglin-wang/grades_out
+   6553706..a7e097f  master     -> origin/master
+``` 
+In this case, follow the section below to update through git.
+
+### Update your local project
+Once you have done ```git fetch``` as directed in the previous section, run
+
+```
+$ git pull
+```
+
+You will then see prompt such as
+```
+Updating 6553706..a7e097f
+Fast-forward
+ README.md       | 17 ++++++++++++++++-
+ grades_out.py   | 51 +++++++++++++++++++++++++++++++++++++++------------
+ grading_item.py |  3 +++
+ 3 files changed, 58 insertions(+), 13 deletions(-)
+```
+
+Now you are all-caught-up with the remote repository. 
+
+In the end, you can run ```git fetch``` again to double check--if the system does not print anything after this command, then you're all set. 
+
 # Release Notes
+
+Titled by date of each release.
 
 ## 10.13.20
 
