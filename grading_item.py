@@ -102,3 +102,6 @@ if __name__ == "__main__":
 
     gi = GradingItem('Comment here')
     print(gi.insert_info("Good job!\nNow there's shouldn't be indentations"))
+
+    gi = GradingItem("Emp Total if it were out of the 6 Point Course Grading Scale\n/6")
+    print(gi.insert_info("2.4"))

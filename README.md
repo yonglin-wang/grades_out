@@ -341,3 +341,18 @@ If this happens, switch to exporting and using a .csv-format grading spreadsheet
 In this case, the report of that student will be generated immediately under the LATTE parent folder. For those reports, you will need to upload them to LATTE manually. 
 
 Note that saving to parent directory could also happen when a student submits their work but drops the course after grading starts, which will cause LATTE to hide their submission folders. In this case, you do not need to upload the report or do anything with it.
+
+## Can I include duplicated column names?
+No, and the script will in fact throw a RuntimeError if you try to do this. For example, we do not allow two columns both named "Grader Comment". 
+
+Please be more specific about what each column is for, so that the report can be easier for the student to read and understand. For example, instead of two "Grader Comment", change them to "Grader Comment for Part 1" and "Grader Comment for Part 2".
+
+# Release Notes
+
+## 10.13.20
+
+- Now allowing the first row to be the actual grading header for the assignment. In this case, Cell A1 must "Name". The formal assignment name (appearing in the first line of the report) will be defaulted to be the same as the assignment alias entered in command line interface. 
+   
+    - Previously, the sheet layout is more rigid: only the second row can be the actual header, where Cell A1 is the formal name of the assignment, and Cell A2 must be "Name".
+    
+- Now duplicated column names are prohibited through raising a RuntimeError. See [detailed reasoning here](#can-i-include-duplicated-column-names).

@@ -12,7 +12,7 @@ Currently, cannot deal with:
 import os
 import random
 import sys
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 from argparse import ArgumentParser
 import pandas as pd
 
@@ -29,8 +29,7 @@ __email__ = 'yonglinw@brandeis.edu'
 FOLDER_NAME_REGEX = r"([a-zA-Z'-]+) ([a-zA-Z'-]+)_\d+_"  # (First name) (Last Name)
 
 # ###Report Title
-REPORT_TITLE = "Assignment Report for "  # expect leftmost cell of grading sheet to contain what immediately comes
-# after this string
+REPORT_TITLE = "Grading Report for"  # Followed by either alias or report name specified in Cell A1
 
 # ###Name values to skip
 NAME_VALUES_TO_DROP = {"#REF!", ""}
@@ -97,8 +96,29 @@ class GradesOut:
         if verbose:
             print(" Done!")
 
-        # get assignment name
-        self.assignment_name = str(self.df.loc[0, 0]).strip()
+        # check if Name column is in A1 or A2
+        # if name column and header in first row
+        if self.df.at[0, 0].strip() == NAME_COL:
+            # make sure there's no whitespace
+            self.df.at[0, 0] = NAME_COL
+
+            # if Name in Cell A1, assignment name is not specified and will be same as alias name
+            self.assignment_name=assn_alias
+
+        # if name column and header in second row
+        elif self.df.loc[1, 0].strip() == NAME_COL:
+            # make sure there's no whitespace
+            self.df.at[1, 0] = NAME_COL
+
+            # get assignment name
+            self.assignment_name = str(self.df.loc[0, 0]).strip()
+
+            # drop first row
+            self.df = self.df[1:]
+        # if Name isn't in A1 or A2, raise error.
+        else:
+            raise KeyError("Cannot find column \"%s\" containing student names. "
+                           "Please make sure either Cell A1 or A2 is name as \"%s\"." % (NAME_COL, NAME_COL))
 
         if verbose:
             print("Processing grading sheet...", end="")
@@ -107,8 +127,14 @@ class GradesOut:
         if verbose:
             print(" Done!")
 
-        # process sheet
-        self.df.columns.name = ""
+        # ensure there's no duplicate Columns
+        duplicates = [item for item, count in Counter(self.df.columns.to_list()).items() if count > 1]
+        if duplicates:
+            raise RuntimeError("Column \"%s\" is duplicated. "
+                               "Please modify %s so that it does not contain any duplicated column names."
+                               % (duplicates[0], file_name))
+
+        # convert sheet into {student: [info]}
         self.all_info = self.df.set_index(NAME_COL).to_dict(orient="index", into=OrderedDict)
 
         # get all immediate subdirectories under the given path, this time with full relative path
@@ -118,7 +144,7 @@ class GradesOut:
         try:
             conv_dict = pd.read_csv(NAME_CONV_PATH, index_col=GRADING_NAME).to_dict(orient="index", into=OrderedDict)
         except FileNotFoundError:
-            raise FileNotFoundError("Cannot find name conversion .csv file at %s. Please refer to README and "
+            raise FileNotFoundError("Cannot find name conversion .csv file at %s. Please refer to README and/or "
                                     "use name_convert.py to generate one." % NAME_CONV_PATH)
         # flatten the 2D dictionary
         self.conv_dict = dict([(name, list(conv_dict[name].values())[0]) for name in conv_dict.keys()])
@@ -149,9 +175,8 @@ class GradesOut:
         # change all to string
         self.df = self.df.applymap(str)
 
-        # drop first row and set new first row as column name
-        self.df = self.df[1:]
-        self.df.columns = self.df.iloc[0]   # this does not remove the first row
+        # set new first row as column name
+        self.df.columns = self.df.iloc[0]   # set columns--this does not remove the first row
         self.df = self.df[1:]               # we remove the first row again
         self.df.columns.name = ""           # remove the redundant index
 
@@ -222,7 +247,9 @@ class GradesOut:
         :param entry: dictionary containing info for report output
         :return: string formatted assignment report
         """
-        output = "Assignment Report for %s\n\nStudent Name: %s\n\n" % (self.assignment_name.replace("\n", "\n\t"), name)
+        output = "%s %s\n\nStudent Name: %s\n\n" % (REPORT_TITLE.strip(),
+                                                   self.assignment_name.replace("\n", "\n\t"),
+                                                   name)
 
         for info, item in zip(entry.values(), self.items):
             output += item.insert_info(info)
